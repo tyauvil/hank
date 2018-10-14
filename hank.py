@@ -5,14 +5,14 @@ import os
 import validators as valid
 from flask import abort
 
-if os.getenv('REDIS_ENABLED'):
+if os.getenv("REDIS_ENABLED"):
     import redis
 
 salt = os.getenv("SALT", default="ChjXSs55KOFCAb8L")
 offset = os.getenv("CODED_OFFSET", default=44)
 length = os.getenv("CODED_LENGTH", default=6)
 
-pattern = '[A-Za-z0-9]{{{0}}}'.format(length)
+pattern = "[A-Za-z0-9]{{{0}}}".format(length)
 regex = re.compile(pattern)
 
 

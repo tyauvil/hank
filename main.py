@@ -6,8 +6,9 @@ from boto3.dynamodb.conditions import Key
 from flask import Flask, abort, flash, request, redirect, render_template
 from wtforms import Form, TextField, validators
 
-if os.getenv('REDIS_ENABLED'):
+if os.getenv("REDIS_ENABLED"):
     import redis
+
     redis_host = os.getenv("REDIS_HOST", default="localhost")
     redis_client = redis.Redis(host=redis_host)
 
@@ -20,6 +21,7 @@ dynamodb_endpoint = os.getenv("DYNAMODB_ENDPOINT", default="http://localhost:800
 
 dynamodb = boto3.resource("dynamodb", endpoint_url=dynamodb_endpoint)
 table = dynamodb.Table("shortUrl")
+
 
 class ReusableForm(Form):
     url = TextField("Url:", validators=[validators.required()])
@@ -58,7 +60,7 @@ def redirect_from_short(b58_short):
     if not hank.match_b58(b58_short):
         return abort(404)
 
-    if os.getenv('REDIS_ENABLED'):
+    if os.getenv("REDIS_ENABLED"):
         try:
             url = redis_client.get(b58_short).decode()
             return redirect(url, code=302)
@@ -68,7 +70,7 @@ def redirect_from_short(b58_short):
     try:
         response = table.query(KeyConditionExpression=Key("b58_short").eq(b58_short))
         url = response["Items"][0]["url"]
-        if os.getenv('REDIS_ENABLED'):
+        if os.getenv("REDIS_ENABLED"):
             redis_client.set(b58_short, url)
         return redirect(url, code=302)
     except:
