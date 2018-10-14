@@ -13,7 +13,6 @@ if os.getenv("REDIS_ENABLED"):
     redis_client = redis.Redis(host=redis_host)
 
 app = Flask(__name__)
-app.secret_key = b"123456789abcdefghi"
 
 port = os.getenv("PORT", default=5000)
 flask_url = os.getenv("FLASK_URL", default="http://localhost:5000/")
