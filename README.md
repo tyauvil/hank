@@ -15,7 +15,7 @@ FLASK_URL         http://localhost:5000
 DYNAMODB_ENDPOINT http://localhost:8000
 SALT              random bytes to salt the hash function
 CODED_OFFSET      Offset to begin in the hash/base58 output
-CODED_LENGTH      Lenght of shortened URL (6)
+CODED_LENGTH      Length of shortened URL (6)
 ```
 
 ### Who
