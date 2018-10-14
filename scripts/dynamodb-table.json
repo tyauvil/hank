@@ -1,0 +1,15 @@
+{
+    "TableName": "shortUrl",
+    "KeySchema": [
+      { "AttributeName": "b58_short", "KeyType": "HASH" },
+      { "AttributeName": "url", "KeyType": "RANGE" }
+    ],
+    "AttributeDefinitions": [
+      { "AttributeName": "b58_short", "AttributeType": "S" },
+      { "AttributeName": "url", "AttributeType": "S" }
+    ],
+    "ProvisionedThroughput": {
+      "ReadCapacityUnits": 5,
+      "WriteCapacityUnits": 5
+    }
+}
