@@ -1,8 +1,6 @@
 import json
 import os
 from hank import (
-    redis_get,
-    redis_set,
     url_to_b58_short,
     write_to_ddb,
     match_b58,
@@ -15,9 +13,12 @@ from boto3.dynamodb.conditions import Key
 from flask import Flask, Response, abort, flash, request, redirect, render_template
 from wtforms import Form, TextField, validators
 
-if os.getenv("REDIS_ENABLED"):
+if os.getenv("REDIS_ENABLED") is not None:
     import redis
-
+    from hank import (
+        redis_get,
+        redis_set,
+    )
     redis_host = os.getenv("REDIS_HOST", default="localhost")
     redis_client = redis.Redis(host=redis_host)
 
@@ -32,8 +33,9 @@ app.logger.addHandler(handler)
 app.logger.setLevel(logging.DEBUG)
 
 port = os.getenv("PORT", default=5000)
-flask_url = os.getenv("FLASK_URL", default="http://localhost:5000/")
+flask_url = os.getenv("FLASK_URL", default="http://localhost:5000")
 
+memory_cache = []
 
 class ReusableForm(Form):
     url = TextField("Url:", validators=[validators.required()])
@@ -72,7 +74,7 @@ def redirect_from_short_url(b58_short):
     if not match_b58(b58_short):
         return abort(404)
 
-    if os.getenv("REDIS_ENABLED"):
+    if os.getenv("REDIS_ENABLED") is not None:
         try:
             url = redis_get(b58_short)
             return redirect(url, code=302)
@@ -80,7 +82,7 @@ def redirect_from_short_url(b58_short):
             pass
 
     url = ddb_get_url(b58_short)
-    if os.getenv("REDIS_ENABLED"):
+    if os.getenv("REDIS_ENABLED") is not None:
         redis_set(b58_short, url)
 
     return redirect(url, code=302)
