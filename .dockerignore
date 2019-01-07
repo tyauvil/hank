@@ -20,3 +20,5 @@ coverage.xml
 scripts
 images
 .env
+images
+terraform

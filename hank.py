@@ -13,9 +13,9 @@ if os.getenv("REDIS_ENABLED") is not None:
     redis_host = os.getenv("REDIS_HOST", default="localhost")
     redis_client = redis.Redis(host=redis_host)
 
-#dynamodb_endpoint = os.getenv("DYNAMODB_ENDPOINT", default="http://localhost:8000")
+dynamodb_endpoint = os.getenv("DYNAMODB_ENDPOINT", default="http://localhost:8000")
 dynamodb_table = os.getenv("DYNAMODB_TABLE", default="shortUrl")
-dynamodb = boto3.resource("dynamodb")#, endpoint_url=dynamodb_endpoint)
+dynamodb = boto3.resource("dynamodb", endpoint_url=dynamodb_endpoint)
 table = dynamodb.Table(dynamodb_table)
 
 salt = os.getenv("SALT", default="ChjXSs55KOFCAb8L")
