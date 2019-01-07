@@ -1,22 +1,23 @@
 version: '3'
 
 services:
-  # web:
-  #   build: .
-  #   ports:
-  #     - "5000:5000"
-  #   environment:
-  #     - AWS_ACCESS_KEY_ID="abc123"
-  #     - AWS_SECRET_ACCESS_KEY="abc123"
-  #     - AWS_DEFAULT_REGION="us-west-2"
-  #     - DYNAMODB_ENDPOINT=http://dynamodb:8000
-  #     - REDIS_ENABLED="True"
-  #     - REDIS_HOST="redis"
-  #     - FLASK_ENV=development
-  #   depends_on:
-  #     - dynamodb
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    environment:
+      - AWS_ACCESS_KEY_ID="abc123"
+      - AWS_SECRET_ACCESS_KEY="abc123"
+      - AWS_DEFAULT_REGION="us-west-2"
+      - DYNAMODB_ENDPOINT=http://dynamodb:8000
+      - REDIS_ENABLED="True"
+      - REDIS_HOST=redis
+      - FLASK_ENV=development
+      - FLASK_URL=http://localhost:8080
+    depends_on:
+      - dynamodb
   redis:
-    image: redis:4-alpine
+    image: redis:5-alpine
     ports:
       - "6379:6379"
   dynamodb:
@@ -24,11 +25,20 @@ services:
     command: "-jar DynamoDBLocal.jar -inMemory -delayTransientStatuses"
     ports:
       - "8000:8000"
-  # nginx:
-  #   image: "nginx:alpine"
-  #   volumes:
-  #     - ./docker/nginx.conf:/etc/nginx/nginx.conf
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - web
+  aws-cli:
+    image: mesosphere/aws-cli
+    environment:
+      - AWS_ACCESS_KEY_ID="abc123"
+      - AWS_SECRET_ACCESS_KEY="abc123"
+      - AWS_DEFAULT_REGION="us-west-2"
+    command: dynamodb create-table --cli-input-json "file://dynamodb-table.json" --endpoint-url "http://dynamodb:8000"
+    volumes:
+      - ./scripts/dynamodb-table.json:/project/dynamodb-table.json
+  nginx:
+    image: "nginx:alpine"
+    volumes:
+      - ./docker/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8080:8080"
+    depends_on:
+      - web
